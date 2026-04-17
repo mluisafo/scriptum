@@ -1,2 +1,0 @@
-# scriptum
-livro
