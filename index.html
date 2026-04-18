@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Scriptum</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Lora:ital,wght@0,400;0,600;1,400&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet"/>
+<style>
+:root{--ink:#0e0b06;--ink2:#1a1409;--ink3:#261c0c;--paper:#f3ecda;--paper2:#e8ddc8;--gold:#b8860b;--gold-l:#d4a843;--gold-d:#8a6408;--border:rgba(184,134,11,.2);--muted:rgba(243,236,218,.45);--shadow:rgba(14,11,6,.7);--err:#c06050}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--ink);color:var(--paper);font-family:'Lora',Georgia,serif;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9997;opacity:.5;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E")}
+header{position:sticky;top:0;z-index:100;background:rgba(14,11,6,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.8rem}
+.logo h1{font-family:'Playfair Display',serif;font-size:1.55rem;font-weight:900;font-style:italic;line-height:1}
+.logo h1 em{color:var(--gold-l);font-style:normal}
+.logo span{font-size:.56rem;letter-spacing:.5em;color:var(--gold);text-transform:uppercase;opacity:.7}
+.header-right{display:flex;align-items:center;gap:.8rem}
+.settings-btn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:.42rem .75rem;border-radius:2px;cursor:pointer;font-size:.88rem;transition:all .2s}
+.settings-btn:hover{border-color:var(--gold);color:var(--gold-l)}
+.fb-badge{font-size:.58rem;letter-spacing:.2em;padding:.22rem .55rem;border-radius:999px;font-family:'EB Garamond',serif}
+.fb-badge.on{background:rgba(100,180,100,.1);border:1px solid rgba(100,180,100,.3);color:#90c890}
+.fb-badge.off{background:rgba(184,134,11,.08);border:1px solid var(--border);color:rgba(184,134,11,.45)}
+nav{display:flex;justify-content:center;border-bottom:1px solid var(--border);background:rgba(14,11,6,.6);position:sticky;top:53px;z-index:99;backdrop-filter:blur(8px)}
+.tab{font-family:'EB Garamond',serif;font-size:.74rem;letter-spacing:.26em;text-transform:uppercase;padding:.78rem 1.9rem;cursor:pointer;border:none;background:transparent;color:var(--muted);transition:all .2s;border-bottom:2px solid transparent}
+.tab:hover{color:var(--paper)}.tab.active{color:var(--gold-l);border-bottom-color:var(--gold)}
+@media(max-width:480px){.tab{padding:.62rem .7rem;font-size:.6rem;letter-spacing:.08em}}
+.view{display:none;max-width:920px;margin:0 auto;padding:2.4rem 1.4rem 6rem}
+.view.active{display:block}
+.sec-label{font-family:'Playfair Display',serif;font-size:.6rem;font-weight:700;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);display:flex;align-items:center;gap:.6rem;margin-bottom:1rem}
+.sec-label::after{content:'';flex:1;height:1px;background:linear-gradient(to right,rgba(184,134,11,.3),transparent)}
+.card{background:rgba(243,236,218,.04);border:1px solid var(--border);border-radius:3px;padding:1.65rem;margin-bottom:1.5rem;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at top left,rgba(184,134,11,.05),transparent 60%)}
+label{display:block;font-family:'EB Garamond',serif;font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-l);margin-bottom:.36rem}
+input[type=text],input[type=password],input[type=number],select,textarea{width:100%;background:rgba(14,11,6,.65);border:1px solid rgba(184,134,11,.27);border-radius:2px;color:var(--paper);font-family:'Lora',serif;font-size:.91rem;padding:.6rem .9rem;outline:none;transition:border-color .2s,box-shadow .2s;margin-bottom:1.2rem}
+input:focus,select:focus,textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(184,134,11,.1)}
+textarea{resize:vertical;min-height:76px}
+select option{background:#1a1409}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.85rem}
+@media(max-width:560px){.row2,.row3{grid-template-columns:1fr}}
+.btn{font-family:'EB Garamond',serif;letter-spacing:.17em;text-transform:uppercase;border:none;border-radius:2px;cursor:pointer;transition:all .2s}
+.btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold-d));color:var(--ink);font-weight:700;padding:.7rem 1.75rem;font-size:.9rem}
+.btn-gold:hover:not(:disabled){filter:brightness(1.1);transform:translateY(-1px);box-shadow:0 5px 18px rgba(184,134,11,.28)}
+.btn-gold:disabled{opacity:.4;cursor:not-allowed}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--gold-l);padding:.58rem 1.3rem;font-size:.8rem}
+.btn-ghost:hover{border-color:var(--gold);background:rgba(184,134,11,.07)}
+.btn-danger{background:transparent;border:1px solid rgba(160,60,40,.35);color:#c07070;padding:.46rem .95rem;font-size:.76rem}
+.btn-danger:hover{background:rgba(160,60,40,.1);border-color:rgba(160,60,40,.6)}
+.btn-sm{padding:.38rem .9rem;font-size:.72rem}.btn-full{width:100%}
+.btn-row{display:flex;gap:.65rem;flex-wrap:wrap;align-items:center}
+#progress-wrap{display:none;margin-bottom:1.5rem}
+.prog-bg{background:rgba(243,236,218,.07);border-radius:999px;height:5px;overflow:hidden;margin:.62rem 0 .28rem}
+.prog-bar{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-l));border-radius:999px;transition:width .4s ease;width:0%}
+.prog-label{font-family:'EB Garamond',serif;font-style:italic;font-size:.86rem;color:var(--muted)}
+.lib-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:1.25rem}
+.book-card{background:rgba(243,236,218,.04);border:1px solid var(--border);border-radius:3px;overflow:hidden;cursor:pointer;transition:all .25s;display:flex;flex-direction:column}
+.book-card:hover{border-color:var(--gold-l);transform:translateY(-3px);box-shadow:0 10px 30px var(--shadow)}
+.bk-cover{width:100%;height:188px;object-fit:cover;background:var(--ink2);display:block}
+.bk-ph{width:100%;height:188px;background:linear-gradient(160deg,#1c1609,#2a1e08);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.4rem;padding:.9rem}
+.bk-ph-g{font-size:.56rem;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);opacity:.6}
+.bk-ph-t{font-family:'Playfair Display',serif;font-style:italic;font-size:.88rem;text-align:center;color:var(--paper);line-height:1.25}
+.bk-body{padding:.85rem;flex:1;display:flex;flex-direction:column;gap:.32rem}
+.bk-title{font-family:'Playfair Display',serif;font-size:.92rem;font-style:italic;color:var(--paper);line-height:1.2}
+.bk-meta{font-family:'EB Garamond',serif;font-size:.73rem;color:var(--muted)}
+.bk-share{font-size:.58rem;letter-spacing:.15em;padding:.16rem .48rem;border-radius:999px;background:rgba(100,180,100,.1);border:1px solid rgba(100,180,100,.25);color:#90c890;display:inline-block;margin-top:.18rem}
+.bk-actions{display:flex;gap:.42rem;margin-top:.45rem;flex-wrap:wrap}
+.lib-empty{grid-column:1/-1;text-align:center;padding:3rem 1rem;font-family:'EB Garamond',serif;font-style:italic;color:var(--muted)}
+.lib-empty-icon{font-size:2rem;display:block;margin-bottom:.65rem;opacity:.3}
+#reader-modal{display:none;position:fixed;inset:0;background:rgba(8,6,3,.94);z-index:200;overflow-y:auto}
+#reader-modal.open{display:block}
+.reader-wrap{max-width:740px;margin:0 auto;padding:1.4rem 1.4rem 6rem}
+.reader-toolbar{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;padding:.75rem 0 1.3rem;border-bottom:1px solid var(--border);margin-bottom:1.9rem}
+.reader-toolbar .sp{flex:1}
+.r-cover{text-align:center;padding:3.2rem 2rem;border:1px solid rgba(184,134,11,.18);margin-bottom:2.8rem;position:relative}
+.r-cover::before,.r-cover::after{content:'';position:absolute;left:14px;right:14px;height:1px;background:linear-gradient(to right,transparent,var(--gold),transparent)}
+.r-cover::before{top:14px}.r-cover::after{bottom:14px}
+.r-cimg{width:230px;height:335px;object-fit:cover;display:block;margin:0 auto 1.9rem;border:2px solid rgba(184,134,11,.24);box-shadow:0 14px 40px var(--shadow)}
+.r-cph{width:230px;height:335px;background:linear-gradient(160deg,#1c1609,#2c1e09);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 1.9rem;border:1px solid rgba(184,134,11,.18)}
+.r-genre{font-size:.58rem;letter-spacing:.5em;text-transform:uppercase;color:var(--gold);margin-bottom:.75rem;opacity:.8}
+.r-title{font-family:'Playfair Display',serif;font-size:clamp(1.7rem,5vw,2.8rem);font-weight:900;font-style:italic;color:var(--paper);line-height:1.1;margin-bottom:.55rem}
+.r-author{font-family:'EB Garamond',serif;font-style:italic;color:var(--muted);font-size:.95rem;letter-spacing:.1em}
+.r-date{font-size:.65rem;color:rgba(243,236,218,.2);margin-top:.9rem;letter-spacing:.1em}
+.r-sec{margin-bottom:2.7rem;padding-bottom:2.3rem;border-bottom:1px solid rgba(184,134,11,.09)}
+.r-sec-lbl{font-family:'Playfair Display',serif;font-size:.58rem;letter-spacing:.5em;text-transform:uppercase;color:var(--gold);margin-bottom:.55rem}
+.r-sec-title{font-family:'Playfair Display',serif;font-size:1.55rem;font-weight:700;font-style:italic;color:var(--paper);margin-bottom:1.2rem;padding-bottom:.6rem;border-bottom:1px solid rgba(184,134,11,.13)}
+.r-body{font-family:'EB Garamond',serif;font-size:1.07rem;line-height:1.94;color:rgba(243,236,218,.85);text-align:justify;hyphens:auto}
+.r-body p{margin-bottom:.95rem}
+.r-body p:first-child::first-letter{font-family:'Playfair Display',serif;font-size:3.4rem;font-weight:900;float:left;line-height:.82;margin-right:.1em;color:var(--gold-l)}
+.toc-row{display:flex;align-items:baseline;padding:.4rem 0;border-bottom:1px dotted rgba(184,134,11,.1);font-family:'EB Garamond',serif;font-size:.98rem;color:rgba(243,236,218,.7)}
+.toc-t{flex:1}.toc-dots{flex:1;border-bottom:1px dotted rgba(184,134,11,.2);margin:0 .45rem .18rem}
+.toc-p{font-size:.78rem;color:var(--gold);min-width:2rem;text-align:right}
+.ch-illus{width:100%;max-width:460px;margin:1.3rem auto 1.7rem;display:block;border:1px solid rgba(184,134,11,.17);box-shadow:0 6px 20px var(--shadow)}
+#share-modal{display:none;position:fixed;inset:0;background:rgba(8,6,3,.88);z-index:300;align-items:center;justify-content:center}
+#share-modal.open{display:flex}
+.share-box{background:var(--ink2);border:1px solid var(--border);border-radius:4px;padding:1.9rem;width:100%;max-width:490px;margin:1rem;position:relative}
+.share-box h3{font-family:'Playfair Display',serif;font-style:italic;font-size:1.35rem;margin-bottom:1.1rem;color:var(--paper)}
+.share-lf{display:flex;gap:.55rem;margin-bottom:.9rem}
+.share-lf input{margin-bottom:0;flex:1;font-size:.78rem}
+.share-wap{display:flex;align-items:center;gap:.75rem;padding:.85rem 1rem;background:rgba(37,211,102,.07);border:1px solid rgba(37,211,102,.18);border-radius:2px;cursor:pointer;transition:all .2s;margin-bottom:.6rem}
+.share-wap:hover{background:rgba(37,211,102,.13)}
+.share-wap-icon{font-size:1.3rem}
+.share-wap-t{font-family:'EB Garamond',serif;font-size:.88rem;color:var(--paper)}
+.share-wap-s{font-size:.73rem;color:var(--muted);display:block}
+.modal-close{position:absolute;top:.75rem;right:.85rem;background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:1.1rem}
+#settings-modal{display:none;position:fixed;inset:0;background:rgba(8,6,3,.88);z-index:400;align-items:center;justify-content:center}
+#settings-modal.open{display:flex}
+.settings-box{background:var(--ink2);border:1px solid var(--border);border-radius:4px;padding:1.9rem;width:100%;max-width:550px;margin:1rem;position:relative;max-height:88vh;overflow-y:auto}
+.settings-box h3{font-family:'Playfair Display',serif;font-style:italic;font-size:1.45rem;margin-bottom:.35rem;color:var(--paper)}
+.settings-box .sub{font-family:'EB Garamond',serif;font-style:italic;font-size:.84rem;color:var(--muted);margin-bottom:1.5rem}
+.s-section{margin-bottom:1.7rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}
+.s-section:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.key-row{display:flex;gap:.55rem;align-items:center}
+.key-row input{margin-bottom:0;flex:1}
+.kstatus{font-size:.73rem;font-family:'EB Garamond',serif;font-style:italic;margin-top:.38rem}
+.kstatus.ok{color:#7db87d}.kstatus.err{color:#c07070}.kstatus.pending{color:var(--muted)}
+.fb-help{font-family:'EB Garamond',serif;font-size:.79rem;color:var(--muted);font-style:italic;margin-bottom:.8rem;line-height:1.65}
+.fb-help a{color:var(--gold-l)}
+#view-overlay{display:none;position:fixed;inset:0;background:rgba(8,6,3,.96);z-index:500;overflow-y:auto}
+#view-overlay.open{display:block}
+.vow{max-width:740px;margin:0 auto;padding:1.4rem 1.4rem 6rem}
+.vow-bar{display:flex;align-items:center;gap:.8rem;padding-bottom:1.1rem;border-bottom:1px solid var(--border);margin-bottom:1.9rem}
+.collab-layout{display:grid;grid-template-columns:225px 1fr;gap:1.25rem;min-height:560px}
+@media(max-width:660px){.collab-layout{grid-template-columns:1fr}}
+.collab-sidebar{display:flex;flex-direction:column;gap:.42rem}
+.collab-btn{background:rgba(243,236,218,.04);border:1px solid var(--border);border-radius:2px;padding:.58rem .82rem;cursor:pointer;text-align:left;transition:all .2s;width:100%}
+.collab-btn:hover{border-color:var(--gold);background:rgba(184,134,11,.06)}
+.collab-btn.active{border-color:var(--gold);background:rgba(184,134,11,.1)}
+.collab-btn .cn{font-size:.58rem;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:.16rem}
+.collab-btn .ct{font-family:'Playfair Display',serif;font-style:italic;font-size:.84rem;color:var(--paper);line-height:1.2;display:block}
+.collab-main{display:flex;flex-direction:column;gap:.95rem}
+.collab-editor{background:rgba(14,11,6,.75);border:1px solid var(--border);border-radius:2px;padding:1.05rem;min-height:270px;font-family:'EB Garamond',serif;font-size:1rem;line-height:1.83;color:rgba(243,236,218,.88);outline:none;resize:vertical;width:100%;margin-bottom:.75rem}
+.collab-editor:focus{border-color:var(--gold)}
+.ai-panel{background:rgba(14,11,6,.55);border:1px solid var(--border);border-radius:2px;padding:1.05rem;display:flex;flex-direction:column;gap:.75rem}
+.ai-msgs{overflow-y:auto;display:flex;flex-direction:column;gap:.65rem;max-height:250px;padding-right:.3rem}
+.ai-msg{padding:.65rem .9rem;border-radius:2px;font-family:'EB Garamond',serif;font-size:.91rem;line-height:1.7;animation:fadeUp .3s forwards}
+.ai-msg.user{background:rgba(184,134,11,.09);border:1px solid rgba(184,134,11,.17);align-self:flex-end;max-width:85%}
+.ai-msg.bot{background:rgba(243,236,218,.04);border:1px solid var(--border);align-self:flex-start;max-width:92%}
+.ai-input-row{display:flex;gap:.55rem}
+.ai-input-row textarea{margin-bottom:0;flex:1;min-height:48px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+#toast{position:fixed;bottom:1.7rem;right:1.7rem;background:var(--ink2);border:1px solid rgba(184,134,11,.34);color:var(--paper);font-family:'EB Garamond',serif;font-style:italic;font-size:.89rem;padding:.68rem 1.2rem;border-radius:2px;box-shadow:0 8px 26px var(--shadow);opacity:0;transform:translateY(10px);transition:all .3s;z-index:9999;pointer-events:none;max-width:310px}
+#toast.show{opacity:1;transform:translateY(0)}
+#toast.err{border-color:rgba(192,80,60,.5);color:#e09090}
+footer{text-align:center;padding:1.3rem 1rem;font-family:'EB Garamond',serif;font-style:italic;font-size:.76rem;color:rgba(243,236,218,.17);border-top:1px solid rgba(184,134,11,.1)}
+@media print{
+  @page{size:A4 portrait;margin:28mm 30mm 28mm 30mm}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  body,#reader-modal,#view-overlay{background:#fff!important;color:#222!important}
+  header,nav,.reader-toolbar,.vow-bar,#toast,footer,#settings-modal,#share-modal,.btn,.bk-actions,#collab-sel,.tab{display:none!important}
+  #reader-modal,#view-overlay{position:static!important;overflow:visible!important;display:block!important}
+  .reader-wrap,.vow{max-width:100%!important;padding:0!important;margin:0!important}
+  .r-cover{border:none!important;padding:0!important;text-align:center;page-break-after:always;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;min-height:92vh!important}
+  .r-cover::before,.r-cover::after{display:none!important}
+  .r-cimg{width:165px!important;height:240px!important;margin:0 auto 1.4rem!important;box-shadow:none!important;border:1px solid #ccc!important}
+  .r-cph{width:165px!important;height:240px!important;margin:0 auto 1.4rem!important;background:#f5f0e8!important}
+  .r-genre{color:#a08030!important}.r-title{color:#111!important;font-family:Georgia,serif!important;font-size:22pt!important}
+  .r-author{color:#555!important}.r-date{color:#aaa!important}
+  .r-sec{page-break-inside:avoid;border-bottom:1pt solid #e0d0b0!important;padding-bottom:1.4rem!important;margin-bottom:1.9rem!important}
+  .r-sec:nth-of-type(n+3){page-break-before:always}
+  .r-sec-lbl{color:#a08030!important;font-size:7pt!important;letter-spacing:.4em!important}
+  .r-sec-title{color:#1a1409!important;font-family:Georgia,serif!important;font-size:14pt!important;border-bottom:1pt solid #d0c0a0!important}
+  .r-body{color:#2a2010!important;font-family:Georgia,serif!important;font-size:11pt!important;line-height:1.85!important}
+  .r-body p::first-letter{color:#8a6408!important}
+  .toc-row{color:#333!important}.toc-p{color:#8a6408!important}
+  .ch-illus{max-width:370px!important;page-break-inside:avoid!important}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <h1>Scr<em>i</em>ptum</h1>
+    <span>Gerador Literário</span>
+  </div>
+  <div class="header-right">
+    <span class="fb-badge off" id="fb-badge">● local</span>
+    <button class="settings-btn" onclick="openSettings()">⚙ Configurações</button>
+  </div>
+</header>
+
+<nav>
+  <button class="tab active" onclick="showView('create')" id="tab-create">✦ Criar</button>
+  <button class="tab" onclick="showView('library')" id="tab-library">📚 Biblioteca</button>
+  <button class="tab" onclick="showView('collaborate')" id="tab-collaborate">✏️ Colaborar</button>
+</nav>
+
+<!-- VIEW: CRIAR -->
+<div class="view active" id="view-create">
+  <div class="card">
+    <p class="sec-label">Novo Livro</p>
+    <div class="row2">
+      <div><label for="book-title">Título</label><input type="text" id="book-title" placeholder="ex: As Sombras do Amanhã"/></div>
+      <div><label for="book-author">Autor</label><input type="text" id="book-author" placeholder="Seu nome ou pseudônimo"/></div>
+    </div>
+    <div class="row2">
+      <div><label for="book-genre">Gênero</label>
+        <select id="book-genre"><option>Fantasia</option><option>Romance</option><option>Suspense / Thriller</option><option>Ficção Científica</option><option>Terror</option><option>Aventura</option><option>Drama</option><option>Mistério</option><option>Conto Filosófico</option><option>Faroeste</option><option>Distopia</option><option>Policial</option></select>
+      </div>
+      <div><label for="book-lang">Idioma</label>
+        <select id="book-lang"><option value="português brasileiro">Português (BR)</option><option value="inglês">English</option><option value="espanhol">Español</option><option value="francês">Français</option></select>
+      </div>
+    </div>
+    <label for="book-synopsis">Sinopse / Ideia Principal</label>
+    <textarea id="book-synopsis" placeholder="Descreva a história, protagonista e conflito central…"></textarea>
+    <div class="row3">
+      <div><label for="num-ch">Capítulos</label><input type="number" id="num-ch" value="5" min="1" max="20"/></div>
+      <div><label for="words-ch">Extensão</label>
+        <select id="words-ch"><option value="600">Curto (~600 pal.)</option><option value="900" selected>Médio (~900 pal.)</option><option value="1400">Longo (~1400 pal.)</option></select>
+      </div>
+      <div><label for="illus-opt">Ilustrações</label>
+        <select id="illus-opt"><option value="cover">Só capa</option><option value="all">Capa + capítulos</option><option value="none">Nenhuma</option></select>
+      </div>
+    </div>
+    <label for="extra-notes">Instruções Adicionais</label>
+    <textarea id="extra-notes" style="min-height:52px" placeholder="ex: narrador 1ª pessoa, tom dark, final em aberto…"></textarea>
+    <button class="btn btn-gold btn-full" id="gen-btn" onclick="generateBook()">✦ &nbsp;Gerar Livro Completo</button>
+  </div>
+  <div id="progress-wrap">
+    <p class="sec-label">Escrevendo sua obra</p>
+    <p class="prog-label" id="prog-label">Inicializando…</p>
+    <div class="prog-bg"><div class="prog-bar" id="prog-bar"></div></div>
+  </div>
+</div>
+
+<!-- VIEW: BIBLIOTECA -->
+<div class="view" id="view-library">
+  <div style="display:flex;align-items:center;gap:.9rem;margin-bottom:1.4rem;flex-wrap:wrap">
+    <p class="sec-label" style="margin-bottom:0;flex:1">Sua Biblioteca</p>
+    <button class="btn btn-ghost btn-sm" onclick="syncCloud()" id="sync-btn" style="display:none">↻ Sincronizar</button>
+  </div>
+  <div class="lib-grid" id="lib-grid"></div>
+</div>
+
+<!-- VIEW: COLABORAR -->
+<div class="view" id="view-collaborate">
+  <p class="sec-label">Colaborar com IA</p>
+  <div class="card" style="padding:1.2rem">
+    <label for="collab-sel">Selecione o livro</label>
+    <select id="collab-sel" onchange="loadCollabBook()" style="margin-bottom:0"><option value="">— Escolha um livro —</option></select>
+  </div>
+  <div id="collab-body" style="display:none">
+    <div class="collab-layout">
+      <div class="collab-sidebar" id="collab-sidebar"></div>
+      <div class="collab-main">
+        <div class="card" style="padding:1.1rem">
+          <p class="sec-label" id="edit-lbl">Editando</p>
+          <textarea class="collab-editor" id="collab-editor" placeholder="Selecione uma seção ao lado…"></textarea>
+          <div class="btn-row">
+            <button class="btn btn-gold btn-sm" onclick="saveSection()">✓ Salvar</button>
+            <button class="btn btn-ghost btn-sm" onclick="regenSection()">↺ Regenerar com IA</button>
+            <button class="btn btn-ghost btn-sm" onclick="addIllus()">🖼 Gerar Ilustração</button>
+          </div>
+        </div>
+        <div class="card" style="padding:1.1rem">
+          <p class="sec-label">Assistente Literário</p>
+          <div class="ai-panel">
+            <div class="ai-msgs" id="ai-msgs"><div class="ai-msg bot">Olá! Selecione uma seção e me diga como posso ajudar — melhorias, tramas alternativas, novos personagens, revisão de estilo…</div></div>
+            <div class="ai-input-row">
+              <textarea id="ai-input" placeholder="Pergunte algo… (Ctrl+Enter envia)" rows="2"></textarea>
+              <button class="btn btn-gold btn-sm" onclick="sendAI()" style="align-self:flex-end">Enviar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- READER MODAL -->
+<div id="reader-modal">
+  <div class="reader-wrap">
+    <div class="reader-toolbar">
+      <button class="btn btn-ghost btn-sm" onclick="closeReader()">← Fechar</button>
+      <span class="sp"></span>
+      <button class="btn btn-ghost btn-sm" onclick="exportPDF()">📄 PDF</button>
+      <button class="btn btn-ghost btn-sm" onclick="dlTxt()">↓ .txt</button>
+      <button class="btn btn-ghost btn-sm" onclick="openShare()">🔗 Compartilhar</button>
+      <button class="btn btn-ghost btn-sm" onclick="openCollabReader()">✏️ Editar</button>
+      <button class="btn btn-danger btn-sm" onclick="delBook()">✕</button>
+    </div>
+    <div id="reader-content"></div>
+  </div>
+</div>
+
+<!-- SHARE MODAL -->
+<div id="share-modal">
+  <div class="share-box">
+    <button class="modal-close" onclick="closeShare()">✕</button>
+    <h3>Compartilhar Livro</h3>
+    <div id="share-content"></div>
+  </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div id="settings-modal">
+  <div class="settings-box">
+    <button class="modal-close" onclick="closeSettings()">✕</button>
+    <h3>Configurações</h3>
+    <p class="sub">Preferências salvas localmente no seu navegador.</p>
+
+    <div class="s-section">
+      <p class="sec-label">Gemini API Key</p>
+      <p style="font-family:'EB Garamond',serif;font-size:.8rem;color:var(--muted);margin-bottom:.85rem;font-style:italic">Obtenha gratuitamente em <a href="https://aistudio.google.com" target="_blank" style="color:var(--gold-l)">aistudio.google.com</a></p>
+      <div class="key-row">
+        <input type="password" id="api-key-input" placeholder="AIza…" autocomplete="off"/>
+        <button class="btn btn-ghost btn-sm" onclick="saveApiKey()">Salvar</button>
+        <button class="btn btn-ghost btn-sm" onclick="toggleKey()" title="Mostrar/ocultar">👁</button>
+      </div>
+      <p class="kstatus pending" id="key-status">Insira sua chave para começar.</p>
+    </div>
+
+    <div class="s-section">
+      <p class="sec-label">Firebase (compartilhamento)</p>
+      <p class="fb-help">Configure para <strong style="color:var(--paper)">sincronizar em qualquer dispositivo</strong> e gerar <strong style="color:var(--paper)">links de compartilhamento públicos</strong>.<br><br>
+      1. <a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a> → Novo projeto<br>
+      2. Firestore Database → Criar → Regras: <code style="font-size:.76rem;color:var(--gold-l)">allow read, write: if true;</code><br>
+      3. Configurações ⚙ → Geral → Seus apps → Web → copie os valores abaixo</p>
+      <label for="fb-key">API Key</label><input type="text" id="fb-key" placeholder="AIza…"/>
+      <label for="fb-pid">Project ID</label><input type="text" id="fb-pid" placeholder="meu-projeto-abc"/>
+      <label for="fb-aid">App ID</label><input type="text" id="fb-aid" placeholder="1:123:web:abc"/>
+      <div class="btn-row">
+        <button class="btn btn-gold btn-sm" onclick="saveFirebase()">Conectar Firebase</button>
+        <button class="btn btn-danger btn-sm" onclick="clearFirebase()">Desconectar</button>
+      </div>
+      <p class="kstatus pending" id="fb-status" style="margin-top:.45rem"></p>
+    </div>
+
+    <div class="s-section">
+      <p class="sec-label">Dados Locais</p>
+      <button class="btn btn-danger btn-sm" onclick="clearAll()">Apagar todos os dados locais</button>
+    </div>
+  </div>
+</div>
+
+<!-- PUBLIC VIEW OVERLAY -->
+<div id="view-overlay">
+  <div class="vow">
+    <div class="vow-bar">
+      <span style="font-family:'Playfair Display',serif;font-style:italic;color:var(--gold-l);font-size:.95rem">Scriptum</span>
+      <span style="flex:1"></span>
+      <button class="btn btn-ghost btn-sm" onclick="exitOverlay()">Fechar</button>
+      <button class="btn btn-ghost btn-sm" onclick="pdfOverlay()">📄 PDF</button>
+    </div>
+    <div id="overlay-content"></div>
+  </div>
+</div>
+
+<footer>Scriptum — <span id="model-lbl">Gemini AI</span></footer>
+<div id="toast"></div>
+
+<script type="module">
+// ═══ FIREBASE (dynamic import) ═══
+let db = null;
+async function initFirebase(cfg){
+  try{
+    const {initializeApp,getApps} = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+    const {getFirestore,doc,setDoc,getDoc,collection,getDocs,deleteDoc} = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    window._fb = {doc,setDoc,getDoc,collection,getDocs,deleteDoc};
+    const app = getApps().length ? getApps()[0] : initializeApp(cfg);
+    db = getFirestore(app);
+    G('fb-badge').textContent='● cloud'; G('fb-badge').className='fb-badge on';
+    G('sync-btn').style.display='inline-block';
+    return true;
+  }catch(e){ toast('Firebase: '+e.message,true); return false; }
+}
+
+// ═══ UTILS ═══
+const G = id => document.getElementById(id);
+function toast(msg,err=false){ const t=G('toast');t.textContent=msg;t.className='show'+(err?' err':'');clearTimeout(t._t);t._t=setTimeout(()=>t.className='',3500); }
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+function wc(s){ return (s||'').split(/\s+/).filter(Boolean).length; }
+function ep(words,wpp=280){ return Math.max(1,Math.round(words/wpp)); }
+function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+function paras(t){ return (t||'<em>sem conteúdo</em>').split(/\n+/).filter(p=>p.trim()).map(p=>`<p>${p.trim()}</p>`).join(''); }
+
+// ═══ LIBRARY ═══
+function getLib(){ return JSON.parse(localStorage.getItem('scriptum_lib')||'[]'); }
+function setLib(b){ localStorage.setItem('scriptum_lib',JSON.stringify(b)); }
+function saveBook(b){ const lib=getLib(),i=lib.findIndex(x=>x.id===b.id);if(i>=0)lib[i]=b;else lib.unshift(b);setLib(lib); }
+function getBook(id){ return getLib().find(b=>b.id===id)||null; }
+function rmBook(id){ setLib(getLib().filter(b=>b.id!==id)); }
+
+async function pushCloud(book){ if(!db)return; try{const{doc,setDoc}=window._fb;await setDoc(doc(db,'books',book.id),book);}catch(e){} }
+
+window.syncCloud = async function(){
+  if(!db){toast('Firebase não configurado.',true);return;}
+  try{const{collection,getDocs}=window._fb;const s=await getDocs(collection(db,'books'));let n=0;s.forEach(d=>{saveBook(d.data());n++;});renderLib();toast(`${n} livros sincronizados.`);}
+  catch(e){toast('Erro: '+e.message,true);}
+};
+
+// ═══ GEMINI ═══
+let models=[],activeModel=null;
+async function fetchModels(key){
+  const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${key}&pageSize=50`);
+  if(!r.ok)throw new Error('Chave inválida.');
+  const d=await r.json();const pri=['flash-8b','flash-lite','flash','pro'];
+  models=(d.models||[]).filter(m=>(m.supportedGenerationMethods||[]).includes('generateContent')&&/gemini/i.test(m.name)&&!/(vision|embedding|aqa|imagen)/i.test(m.name)).map(m=>m.name.replace('models/','')).sort((a,b)=>{const r=s=>{for(let i=0;i<pri.length;i++)if(s.includes(pri[i]))return i;return pri.length};return r(a)-r(b);});
+  return models;
+}
+function getKey(){ return G('api-key-input').value.trim()||localStorage.getItem('gemini_key')||''; }
+async function callGemini(prompt,key){
+  if(!models.length)await fetchModels(key);
+  const start=activeModel?models.indexOf(activeModel):0;
+  const list=models.slice(Math.max(start,0));
+  for(let i=0;i<list.length;i++){
+    const model=list[i];
+    const url=`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`;
+    try{
+      const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.9,maxOutputTokens:2048}})});
+      if(!r.ok){const e=await r.json().catch(()=>({}));const msg=(e?.error?.message||'').toLowerCase();const skip=msg.includes('quota')||msg.includes('exceeded')||msg.includes('not found')||msg.includes('not supported')||r.status===429;if(skip&&i<list.length-1){if(activeModel===model)activeModel=null;toast(`⚡ ${model} — próximo…`);await sleep(700);continue;}throw new Error(e?.error?.message||`HTTP ${r.status}`);}
+      const data=await r.json();const text=data?.candidates?.[0]?.content?.parts?.[0]?.text||'';
+      if(activeModel!==model){activeModel=model;G('model-lbl').textContent=model;}
+      return text;
+    }catch(err){
+      const skip=(err.message||'').toLowerCase().match(/quota|exceeded|not found|not supported|rate/);
+      if(skip&&i<list.length-1){toast(`⚡ ${model} — próximo…`);await sleep(700);continue;}
+      throw err;
+    }
+  }
+  throw new Error('Todos os modelos sem cota. Veja: ai.dev/rate-limits');
+}
+
+// ═══ ILLUSTRATIONS ═══
+function pollUrl(prompt,w=400,h=600,seed=42){ return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=${w}&height=${h}&seed=${seed}&nologo=true&enhance=true`; }
+function coverP(t,g,s){ return `${g} book cover art, dramatic lighting, title "${t}", ${s.slice(0,100)}, painted illustration, dark cinematic, no text no words`; }
+function chapP(t,g,s){ return `${g} scene illustration, "${t}", ${(s||'').slice(0,100)}, dramatic painted art, cinematic lighting, no text`; }
+
+// ═══ TOC ═══
+function buildTOC(intro,chapters){
+  const toc=[{label:'Introdução',page:3}];let page=3+ep(wc(intro));
+  chapters.forEach(ch=>{toc.push({label:`Capítulo ${ch.num} — ${ch.title}`,page});page+=ep(wc(ch.text));});
+  return toc;
+}
+
+// ═══ GENERATE ═══
+let curId=null;
+window.generateBook = async function(){
+  const key=getKey();
+  if(!key){openSettings();toast('Configure sua chave Gemini em ⚙ Configurações.',true);return;}
+  const title=G('book-title').value.trim()||'Sem Título';
+  const author=G('book-author').value.trim()||'';
+  const genre=G('book-genre').value;
+  const synopsis=G('book-synopsis').value.trim()||'Uma história instigante.';
+  const numCh=Math.min(20,Math.max(1,parseInt(G('num-ch').value)||5));
+  const lang=G('book-lang').value;
+  const notes=G('extra-notes').value.trim();
+  const minW=parseInt(G('words-ch').value)||900;
+  const iOpt=G('illus-opt').value;
+  const seed=Math.abs([...title].reduce((a,c)=>a+c.charCodeAt(0),0))%9999;
+  G('gen-btn').disabled=true;
+  G('progress-wrap').style.display='block';
+  const setP=(p,l)=>{G('prog-bar').style.width=p+'%';G('prog-label').textContent=l;};
+  const book={id:uid(),title,author,genre,lang,synopsis:'',introduction:'',toc:[],chapters:[],coverImage:null,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),seed,public:false,shareToken:uid()};
+  try{
+    if(iOpt!=='none'){setP(4,'Gerando capa…');book.coverImage=pollUrl(coverP(title,genre,synopsis),400,600,seed);}
+    setP(8,'Refinando sinopse…');
+    book.synopsis=await callGemini(`Escreva uma sinopse literária elegante em ${lang} para o livro "${title}" (${genre}).\nIdeia: ${synopsis}\n${notes?'Instruções: '+notes:''}\n3 parágrafos evocativos. Sem título nem cabeçalho.`,key);
+    setP(14,'Escrevendo introdução…');
+    book.introduction=await callGemini(`Escreva uma introdução literária em ${lang} para "${title}" (${genre}).\nSinopse: ${synopsis}\n${notes?'Instruções: '+notes:''}\n2-3 parágrafos. Sem título.`,key);
+    setP(20,'Elaborando capítulos…');
+    const outRaw=await callGemini(`Crie esboço de ${numCh} capítulos em ${lang} para "${title}" (${genre}).\nSinopse: ${synopsis}\n${notes?'Instruções: '+notes:''}\nResposta: APENAS JSON puro sem markdown:\n[{"num":1,"title":"Título","summary":"Resumo"}]`,key);
+    let outline;try{outline=JSON.parse(outRaw.replace(/```json|```/g,'').trim());}catch{throw new Error('Falha ao interpretar esboço.');}
+    for(let i=0;i<outline.length;i++){
+      const ch=outline[i];setP(22+Math.round((i/outline.length)*70),`Capítulo ${i+1}/${outline.length}: "${ch.title}"…`);
+      const text=await callGemini(`Escreva capítulo completo em ${lang} para "${title}" (${genre}).\nSinopse: ${synopsis}\n${notes?'Instruções: '+notes:''}\nCapítulo ${ch.num}: "${ch.title}" — ${ch.summary}\nEscreva o texto diretamente sem repetir o título. Mínimo ${minW} palavras.`,key);
+      const chObj={num:ch.num,title:ch.title,summary:ch.summary,text,illustration:null};
+      if(iOpt==='all')chObj.illustration=pollUrl(chapP(ch.title,genre,ch.summary),512,320,seed+i+1);
+      book.chapters.push(chObj);
+    }
+    setP(96,'Montando sumário…');book.toc=buildTOC(book.introduction,book.chapters);
+    book.updatedAt=new Date().toISOString();setP(100,'Concluído!');
+    saveBook(book);pushCloud(book);curId=book.id;
+    await sleep(500);G('progress-wrap').style.display='none';
+    toast(`"${title}" salvo na biblioteca!`);renderLib();openReader(book.id);
+  }catch(e){toast('Erro: '+e.message,true);G('progress-wrap').style.display='none';}
+  finally{G('gen-btn').disabled=false;}
+};
+
+// ═══ RENDER BOOK HTML ═══
+function bookHTML(book){
+  const coverEl=book.coverImage?`<img src="${book.coverImage}" class="r-cimg" alt="Capa" onerror="this.style.display='none'">`:`<div class="r-cph"></div>`;
+  const fmt=dt=>new Date(dt).toLocaleDateString('pt-BR',{year:'numeric',month:'long'});
+  let h=`<div class="r-cover">${coverEl}<p class="r-genre">${book.genre.toUpperCase()}</p><h2 class="r-title">${book.title}</h2>${book.author?`<p class="r-author">${book.author}</p>`:''}<p class="r-date">${fmt(book.createdAt)}</p></div>`;
+  h+=`<div class="r-sec"><p class="r-sec-lbl">Sinopse</p><div class="r-body">${paras(book.synopsis)}</div></div>`;
+  h+=`<div class="r-sec"><p class="r-sec-lbl">Introdução</p><div class="r-body">${paras(book.introduction)}</div></div>`;
+  if(book.toc?.length){const rows=book.toc.map(t=>`<div class="toc-row"><span class="toc-t">${t.label}</span><span class="toc-dots"></span><span class="toc-p">p. ${t.page}</span></div>`).join('');h+=`<div class="r-sec"><p class="r-sec-lbl">Sumário</p>${rows}</div>`;}
+  book.chapters.forEach(ch=>{const il=ch.illustration?`<img src="${ch.illustration}" class="ch-illus" alt="${ch.title}" onerror="this.style.display='none'">`:'' ;h+=`<div class="r-sec"><p class="r-sec-lbl">Capítulo ${ch.num}</p><h3 class="r-sec-title">${ch.title}</h3>${il}<div class="r-body">${paras(ch.text)}</div></div>`;});
+  return h;
+}
+
+// ═══ READER ═══
+window.openReader=function(id){const b=getBook(id);if(!b){toast('Não encontrado.',true);return;}curId=id;G('reader-content').innerHTML=bookHTML(b);G('reader-modal').classList.add('open');document.body.style.overflow='hidden';};
+window.closeReader=function(){G('reader-modal').classList.remove('open');document.body.style.overflow='';};
+window.openCollabReader=function(){closeReader();showView('collaborate');loadById(curId);};
+window.delBook=function(){if(!curId||!confirm('Excluir permanentemente?'))return;rmBook(curId);if(db){const{doc,deleteDoc}=window._fb;deleteDoc(doc(db,'books',curId)).catch(()=>{});}closeReader();renderLib();toast('Excluído.');};
+
+// ═══ PDF ═══
+function pdfHTML(contentHTML,book){
+  return`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"/><title>${book?.title||'Livro'}</title><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet"/><style>@page{size:A4 portrait;margin:28mm 30mm 28mm 30mm}*{box-sizing:border-box;margin:0;padding:0}body{font-family:'EB Garamond',Georgia,serif;font-size:11.5pt;line-height:1.88;color:#1a1409;background:#fff}.r-cover{text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:92vh;page-break-after:always}.r-cimg,.r-cph{width:160px;height:232px;object-fit:cover;margin:0 auto 1.5rem;border:1px solid #ccc;display:block}.r-cph{background:#f5f0e8}.r-genre{font-size:7pt;letter-spacing:.5em;text-transform:uppercase;color:#a08030;margin-bottom:.6rem}.r-title{font-family:'Playfair Display',serif;font-size:24pt;font-weight:900;font-style:italic;color:#1a1409;line-height:1.1;margin-bottom:.5rem}.r-author{font-style:italic;color:#555;font-size:12pt;letter-spacing:.08em}.r-date{font-size:8pt;color:#aaa;letter-spacing:.1em;margin-top:.8rem}.r-sec{margin-bottom:2rem;padding-bottom:1.8rem;border-bottom:1pt solid #e8ddc8}.r-sec:nth-of-type(n+3){page-break-before:always;padding-top:.5rem}.r-sec-lbl{font-size:7pt;letter-spacing:.45em;text-transform:uppercase;color:#a08030;margin-bottom:.5rem}.r-sec-title{font-family:'Playfair Display',serif;font-size:15pt;font-weight:700;font-style:italic;color:#1a1409;margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1pt solid #e0d0b0}.r-body{text-align:justify;hyphens:auto}.r-body p{margin-bottom:.9rem}.r-body p:first-child::first-letter{font-family:'Playfair Display',serif;font-size:2.8rem;font-weight:900;float:left;line-height:.82;margin-right:.08em;color:#8a6408}.toc-row{display:flex;align-items:baseline;padding:.34rem 0;border-bottom:1pt dotted #d0c0a0}.toc-t{flex:1;font-size:10.5pt}.toc-dots{flex:1;border-bottom:1pt dotted #d0c0a0;margin:0 .4rem .14rem}.toc-p{font-size:9pt;color:#8a6408;min-width:2rem;text-align:right}.ch-illus{max-width:360px;display:block;margin:1.2rem auto 1.5rem;border:1pt solid #d0c0a0}</style></head><body>${contentHTML}<script>window.onload=function(){window.print();}<\/script></body></html>`;
+}
+window.exportPDF=function(){const b=getBook(curId);if(!b)return;const w=window.open('','_blank');w.document.write(pdfHTML(bookHTML(b),b));w.document.close();};
+window.pdfOverlay=function(){const w=window.open('','_blank');w.document.write(pdfHTML(G('overlay-content').innerHTML,null));w.document.close();};
+window.exportPDFLib=function(id){const b=getBook(id);if(!b)return;const w=window.open('','_blank');w.document.write(pdfHTML(bookHTML(b),b));w.document.close();};
+
+// ═══ DOWNLOAD TXT ═══
+window.dlTxt=function(){const b=getBook(curId);if(!b)return;let o=`${b.title}\n${'─'.repeat(50)}\n${b.author||''}\n\nSINOPSE\n${'─'.repeat(30)}\n${b.synopsis}\n\nINTRODUÇÃO\n${'─'.repeat(30)}\n${b.introduction}\n\nSUMÁRIO\n${'─'.repeat(30)}\n`;(b.toc||[]).forEach(t=>o+=`${t.label} ........... p.${t.page}\n`);o+='\n';b.chapters.forEach(c=>o+=`CAPÍTULO ${c.num}: ${c.title}\n${'─'.repeat(40)}\n${c.text}\n\n`);const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([o],{type:'text/plain;charset=utf-8'}));a.download=b.title.replace(/\s+/g,'_')+'.txt';a.click();};
+
+// ═══ SHARE ═══
+let shareId=null;
+window.openShare=async function(){if(!curId)return;shareId=curId;const b=getBook(curId);const sc=G('share-content');
+  if(!db){sc.innerHTML=`<p style="font-family:'EB Garamond',serif;color:var(--muted);font-style:italic;line-height:1.7;margin-bottom:1.1rem">Para links de compartilhamento públicos, configure o <strong style="color:var(--paper)">Firebase</strong> em ⚙ Configurações.<br><br>Você pode compartilhar o PDF baixado via WhatsApp:</p><div class="share-wap" onclick="wapPDF()"><span class="share-wap-icon">💬</span><div class="share-wap-t">Compartilhar PDF via WhatsApp<span class="share-wap-s">Gera o PDF e abre o WhatsApp</span></div></div><button class="btn btn-ghost btn-sm btn-full" onclick="exportPDF()" style="margin-top:.7rem">📄 Gerar PDF</button>`;}
+  else{b.public=true;saveBook(b);pushCloud(b);const url=location.href.split('#')[0]+'#view/'+b.shareToken+'/'+b.id;sc.innerHTML=`<div style="margin-bottom:.9rem"><label style="font-family:'EB Garamond',serif;font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-l);display:block;margin-bottom:.35rem">Link de Visualização</label><div class="share-lf"><input type="text" value="${url}" readonly/><button class="btn btn-ghost btn-sm" onclick="cpLink('${url}')">Copiar</button></div></div><div class="share-wap" onclick="wapLink('${encodeURIComponent(url)}','${encodeURIComponent(b.title)}')"><span class="share-wap-icon">💬</span><div class="share-wap-t">Compartilhar link via WhatsApp<span class="share-wap-s">Link abre o livro no navegador</span></div></div><div class="share-wap" onclick="wapPDF()" style="margin-top:.55rem"><span class="share-wap-icon">📄</span><div class="share-wap-t">Compartilhar PDF via WhatsApp<span class="share-wap-s">Baixa PDF e abre o WhatsApp</span></div></div>`;}
+  G('share-modal').classList.add('open');
+};
+window.closeShare=()=>G('share-modal').classList.remove('open');
+window.cpLink=url=>{navigator.clipboard.writeText(url).then(()=>toast('Link copiado!'));};
+window.wapLink=(eu,et)=>{const msg=`Leia o livro "${decodeURIComponent(et)}" que escrevi:\n${decodeURIComponent(eu)}`;window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`,'_blank');};
+window.wapPDF=function(){exportPDF();setTimeout(()=>{const b=getBook(shareId||curId);window.open(`https://wa.me/?text=${encodeURIComponent(`Olá! Compartilho o livro "${b?.title||'meu livro'}". Envio em PDF — confira nos seus arquivos!`)}`,'_blank');toast('PDF gerado. Salve e envie pelo WhatsApp.');},900);};
+window.exitOverlay=()=>{G('view-overlay').classList.remove('open');document.body.style.overflow='';};
+
+// ═══ LIBRARY ═══
+function renderLib(){
+  const lib=getLib(),g=G('lib-grid');
+  if(!lib.length){g.innerHTML=`<div class="lib-empty"><span class="lib-empty-icon">📚</span>Biblioteca vazia. Crie seu primeiro livro na aba <strong>Criar</strong>.</div>`;return;}
+  g.innerHTML=lib.map(b=>{
+    const cov=b.coverImage?`<img src="${b.coverImage}" class="bk-cover" alt="${b.title}" onerror="this.style.display='none'">`:`<div class="bk-ph"><span class="bk-ph-g">${b.genre}</span><span class="bk-ph-t">${b.title}</span></div>`;
+    const sh=b.public?`<span class="bk-share">🔗 compartilhado</span>`:'';
+    return`<div class="book-card"><div onclick="openReader('${b.id}')">${cov}</div><div class="bk-body"><div class="bk-title" onclick="openReader('${b.id}')">${b.title}</div><div class="bk-meta">${b.author||'—'} · ${b.genre} · ${b.chapters.length} cap.</div>${sh}<div class="bk-actions"><button class="btn btn-ghost btn-sm" onclick="openReader('${b.id}')">Ler</button><button class="btn btn-ghost btn-sm" onclick="exportPDFLib('${b.id}')">PDF</button><button class="btn btn-ghost btn-sm" onclick="loadById('${b.id}')">Editar</button><button class="btn btn-danger btn-sm" onclick="confirmDel('${b.id}')">✕</button></div></div></div>`;
+  }).join('');
+  refreshCollabSel();
+}
+window.confirmDel=id=>{if(!confirm('Excluir este livro?'))return;rmBook(id);if(db){const{doc,deleteDoc}=window._fb;deleteDoc(doc(db,'books',id)).catch(()=>{});}renderLib();toast('Excluído.');};
+
+// ═══ COLLABORATE ═══
+let cBook=null,cSec=null;
+function refreshCollabSel(){const s=G('collab-sel'),lib=getLib(),cv=s.value;s.innerHTML='<option value="">— Escolha um livro —</option>'+lib.map(b=>`<option value="${b.id}">${b.title}</option>`).join('');if(cv)s.value=cv;}
+window.loadCollabBook=()=>loadById(G('collab-sel').value);
+window.loadById=function(id){showView('collaborate');if(!id){G('collab-body').style.display='none';return;}G('collab-sel').value=id;cBook=getBook(id);if(!cBook){toast('Não encontrado.',true);return;}G('collab-body').style.display='block';renderCSidebar();G('ai-msgs').innerHTML=`<div class="ai-msg bot">Pronto para colaborar em <strong>"${cBook.title}"</strong>!</div>`;cSec=null;G('collab-editor').value='';G('edit-lbl').textContent='Editando';};
+
+function renderCSidebar(){
+  const sb=G('collab-sidebar');sb.innerHTML='';
+  [{k:'synopsis',n:'Frente',t:'Sinopse'},{k:'introduction',n:'Frente',t:'Introdução'},...cBook.chapters.map(c=>({k:'ch_'+c.num,n:'Cap. '+c.num,t:c.title}))].forEach(s=>{
+    const b=document.createElement('button');b.className='collab-btn';b.dataset.k=s.k;
+    b.innerHTML=`<span class="cn">${s.n}</span><span class="ct">${s.t}</span>`;
+    b.onclick=()=>{document.querySelectorAll('.collab-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');selSec(s.k,s.t);};
+    sb.appendChild(b);
+  });
+}
+
+function selSec(k,label){
+  cSec=k;let txt='';
+  if(k==='synopsis')txt=cBook.synopsis;
+  else if(k==='introduction')txt=cBook.introduction;
+  else{const c=cBook.chapters.find(c=>c.num===parseInt(k.replace('ch_','')));txt=c?.text||'';}
+  G('edit-lbl').textContent='Editando: '+label;G('collab-editor').value=txt;
+}
+
+window.saveSection=function(){if(!cSec||!cBook){toast('Selecione uma seção.',true);return;}const txt=G('collab-editor').value;if(cSec==='synopsis')cBook.synopsis=txt;else if(cSec==='introduction')cBook.introduction=txt;else{const c=cBook.chapters.find(c=>c.num===parseInt(cSec.replace('ch_','')));if(c)c.text=txt;}cBook.toc=buildTOC(cBook.introduction,cBook.chapters);cBook.updatedAt=new Date().toISOString();saveBook(cBook);pushCloud(cBook);renderLib();toast('Salvo!');};
+
+window.regenSection=async function(){const k=getKey();if(!k){openSettings();return;}if(!cSec||!cBook){toast('Selecione uma seção.',true);return;}const lang=cBook.lang||'português brasileiro';let p='';if(cSec==='synopsis')p=`Reescreva a sinopse de "${cBook.title}" (${cBook.genre}) em ${lang}. Atual: ${cBook.synopsis.slice(0,300)}. Mais impactante, 3 parágrafos.`;else if(cSec==='introduction')p=`Reescreva a introdução de "${cBook.title}" (${cBook.genre}) em ${lang}. Sinopse: ${cBook.synopsis.slice(0,300)}. 2-3 parágrafos envolventes.`;else{const c=cBook.chapters.find(c=>c.num===parseInt(cSec.replace('ch_','')));if(c)p=`Reescreva cap. ${c.num} "${c.title}" de "${cBook.title}" (${cBook.genre}) em ${lang}. Resumo: ${c.summary}. Mínimo 700 palavras.`;}toast('Regenerando…');try{G('collab-editor').value=await callGemini(p,k);toast('Feito! Salve para confirmar.');}catch(e){toast('Erro: '+e.message,true);};};
+
+window.addIllus=function(){if(!cSec?.startsWith('ch_')||!cBook){toast('Selecione um capítulo.',true);return;}const n=parseInt(cSec.replace('ch_',''));const c=cBook.chapters.find(c=>c.num===n);if(!c)return;c.illustration=pollUrl(chapP(c.title,cBook.genre,c.summary||''),512,320,(cBook.seed||42)+n);saveBook(cBook);pushCloud(cBook);renderLib();toast('Ilustração adicionada!');};
+
+// AI Chat
+window.sendAI=async function(){const k=getKey();if(!k){openSettings();return;}const msg=G('ai-input').value.trim();if(!msg)return;G('ai-input').value='';addMsg('user',msg);const ctx=cSec?`\nSeção: ${cSec}\nConteúdo:\n${G('collab-editor').value.slice(0,600)}`:'';const p=`Assistente literário. Livro: "${cBook?.title||''}" (${cBook?.genre||''}).\nSinopse: ${cBook?.synopsis?.slice(0,250)||''}${ctx}\nSe sugerir texto completo, comece com "✦ SUGESTÃO:".\nMensagem: ${msg}`;const el=addMsg('bot','✍️ pensando…');try{const r=await callGemini(p,k);el.remove();if(r.includes('✦ SUGESTÃO:')){const[pre,sug]=r.split('✦ SUGESTÃO:');addMsg('bot',pre.trim());const d=document.createElement('div');d.className='ai-msg bot';d.innerHTML=`<strong style="font-size:.72rem;color:var(--gold);letter-spacing:.15em">✦ SUGESTÃO</strong><br><br>${sug.trim()}<br><br><button class="btn btn-ghost btn-sm" onclick="applySug(this)">↳ Aplicar ao editor</button>`;G('ai-msgs').appendChild(d);}else{addMsg('bot',r);}G('ai-msgs').scrollTop=G('ai-msgs').scrollHeight;}catch(e){el.textContent='Erro: '+e.message;}};
+function addMsg(role,text){const d=document.createElement('div');d.className='ai-msg '+role;d.textContent=text;G('ai-msgs').appendChild(d);G('ai-msgs').scrollTop=G('ai-msgs').scrollHeight;return d;}
+window.applySug=btn=>{const el=btn.closest('.ai-msg');let t=el.textContent.replace(/✦ SUGESTÃO|↳ Aplicar ao editor/g,'').trim();G('collab-editor').value=t;toast('Aplicado. Salve para confirmar.');};
+G('ai-input').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.ctrlKey)sendAI();});
+
+// ═══ SETTINGS ═══
+window.openSettings=function(){G('settings-modal').classList.add('open');const fc=JSON.parse(localStorage.getItem('fb_cfg')||'{}');if(fc.apiKey)G('fb-key').value=fc.apiKey;if(fc.projectId)G('fb-pid').value=fc.projectId;if(fc.appId)G('fb-aid').value=fc.appId;};
+window.closeSettings=()=>G('settings-modal').classList.remove('open');
+window.toggleKey=()=>{const i=G('api-key-input');i.type=i.type==='password'?'text':'password';};
+window.saveApiKey=async function(){const v=G('api-key-input').value.trim();if(!v){toast('Cole sua chave.',true);return;}localStorage.setItem('gemini_key',v);G('key-status').textContent='⏳ Verificando…';G('key-status').className='kstatus pending';models=[];activeModel=null;try{await fetchModels(v);G('key-status').textContent=`✓ Válida · ${models.length} modelos`;G('key-status').className='kstatus ok';toast('Chave salva!');}catch(e){G('key-status').textContent='✗ '+e.message;G('key-status').className='kstatus err';toast('Inválida.',true);}};
+window.saveFirebase=async function(){const apiKey=G('fb-key').value.trim(),projectId=G('fb-pid').value.trim(),appId=G('fb-aid').value.trim();if(!apiKey||!projectId||!appId){toast('Preencha todos os campos.',true);return;}const cfg={apiKey,authDomain:`${projectId}.firebaseapp.com`,projectId,storageBucket:`${projectId}.appspot.com`,messagingSenderId:'000000000000',appId};localStorage.setItem('fb_cfg',JSON.stringify(cfg));G('fb-status').textContent='⏳ Conectando…';G('fb-status').className='kstatus pending';const ok=await initFirebase(cfg);G('fb-status').textContent=ok?'✓ Firebase conectado!':'✗ Falha ao conectar';G('fb-status').className=ok?'kstatus ok':'kstatus err';};
+window.clearFirebase=()=>{localStorage.removeItem('fb_cfg');db=null;G('fb-badge').textContent='● local';G('fb-badge').className='fb-badge off';G('sync-btn').style.display='none';G('fb-status').textContent='Desconectado.';G('fb-status').className='kstatus pending';toast('Firebase desconectado.');};
+window.clearAll=()=>{if(!confirm('Apagar TODOS os dados locais?'))return;localStorage.clear();location.reload();};
+
+// ═══ VIEW SWITCHER ═══
+window.showView=function(id){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));G('view-'+id)?.classList.add('active');G('tab-'+id)?.classList.add('active');if(id==='library')renderLib();if(id==='collaborate')refreshCollabSel();};
+
+// ═══ HASH ROUTER (share links) ═══
+async function handleHash(){
+  const h=location.hash;
+  if(!h.startsWith('#view/'))return;
+  const parts=h.slice(6).split('/'),token=parts[0],id=parts[1]||null;
+  G('view-overlay').classList.add('open');document.body.style.overflow='hidden';
+  G('overlay-content').innerHTML=`<div style="text-align:center;padding:3rem;font-family:'EB Garamond',serif;font-style:italic;color:var(--muted)">Carregando…</div>`;
+  let book=id?getBook(id):getLib().find(b=>b.shareToken===token);
+  if(!book&&db&&id){try{const{doc,getDoc}=window._fb;const s=await getDoc(doc(db,'books',id));if(s.exists())book=s.data();}catch(e){}}
+  G('overlay-content').innerHTML=book?bookHTML(book):`<div style="text-align:center;padding:3rem;font-family:'Playfair Display',serif;font-style:italic;color:var(--muted)">Livro não encontrado.<br><small>Configure Firebase para compartilhamento público.</small></div>`;
+}
+
+// ═══ INIT ═══
+window.addEventListener('DOMContentLoaded',async()=>{
+  const saved=localStorage.getItem('gemini_key');
+  if(saved){G('api-key-input').value=saved;fetchModels(saved).then(()=>{G('key-status').textContent=`✓ ${models.length} modelos disponíveis`;G('key-status').className='kstatus ok';}).catch(()=>{});}
+  const fc=JSON.parse(localStorage.getItem('fb_cfg')||'{}');
+  if(fc.apiKey&&fc.projectId){initFirebase(fc).catch(()=>{});}
+  renderLib();handleHash();
+  window.addEventListener('hashchange',handleHash);
+});
+</script>
+</body>
+</html>
